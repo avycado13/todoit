@@ -1,1 +1,10 @@
+ignoredBuiltDependencies:
+  - unrs-resolver
+
 nodeLinker: hoisted
+
+onlyBuiltDependencies:
+  - '@rocicorp/zero-sqlite3'
+  - esbuild
+  - postinstall-postinstall
+  - protobufjs
