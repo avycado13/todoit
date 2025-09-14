@@ -1,8 +1,11 @@
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import type { Mutators } from "@/db/zero/mutators";
+import type { Schema } from "@/db/zero/schema";
 import { authClient } from "@/lib/auth-client";
 import { useQuery, useZero } from "@rocicorp/zero/react";
+import { isLoading } from "expo-font";
 import { Image } from "expo-image";
 import { useState } from "react";
 import {
@@ -17,7 +20,7 @@ import {
 
 export default function HomeScreen() {
 	const { data: session } = authClient.useSession();
-	const zero = useZero();
+	const zero = useZero<Schema, Mutators>();
 
 	// Form state for creating new tasks
 	const [title, setTitle] = useState("");
@@ -26,8 +29,11 @@ export default function HomeScreen() {
 	const [status, setStatus] = useState("pending");
 
 	// Get tasks query
-	const query = session ? zero.query.tasks.where("userId", session.user.id) : undefined;
-	const { data: tasks, isLoading, error } = useQuery(query);
+	const query = zero.query.tasks.where(
+		"userId",
+		session?.user?.id ? session.user.id : "",
+	);
+	const [tasks, error] = useQuery(query);
 
 	// Handle creating a new task
 	const handleCreateTask = async () => {
@@ -38,11 +44,13 @@ export default function HomeScreen() {
 
 		try {
 			const dueDateTimestamp = dueDate ? new Date(dueDate).getTime() : null;
-			await zero.mutate.tasks.add({
+
+			await zero.mutate.tasks.insert({
 				title,
 				description: description || undefined,
 				due_date: dueDateTimestamp,
 				status,
+				userId: session?.user?.id ?? "",
 			});
 
 			// Clear form
@@ -98,7 +106,7 @@ export default function HomeScreen() {
 		}
 	};
 
-	if (isLoading) {
+	if (isLoading("SpaceMono")) {
 		return (
 			<ParallaxScrollView
 				headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
@@ -127,10 +135,10 @@ export default function HomeScreen() {
 					/>
 				}
 			>
-				<ThemedView style={styles.titleContainer}>
-					<ThemedText type="title">Error loading tasks</ThemedText>
-					<ThemedText>{error.message}</ThemedText>
-				</ThemedView>
+			<ThemedView style={styles.titleContainer}>
+				<ThemedText type="title">Error loading tasks</ThemedText>
+				<ThemedText>{JSON.stringify(error)}</ThemedText>
+			</ThemedView>
 			</ParallaxScrollView>
 		);
 	}

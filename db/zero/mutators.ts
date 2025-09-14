@@ -1,11 +1,14 @@
-import type { CustomMutatorDefs } from "@rocicorp/zero";
-import type { schema, AuthData } from "./schema";
+import type { AuthData } from "@/types/auth";
+import type { Transaction } from "@rocicorp/zero";
+import type { Schema } from "./schema";
+
+type Tx = Transaction<Schema>;
 
 export function createMutators(authData: AuthData | undefined) {
 	return {
 		tasks: {
 			add: async (
-				tx,
+				tx: Tx,
 				{
 					title,
 					description,
@@ -90,7 +93,7 @@ export function createMutators(authData: AuthData | undefined) {
 				);
 			},
 		},
-	} as const satisfies CustomMutatorDefs<typeof schema>;
+	} as const;
 }
 
 export type Mutators = ReturnType<typeof createMutators>;

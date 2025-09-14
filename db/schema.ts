@@ -16,5 +16,5 @@ export const tasks = pgTable("tasks", {
 		.references(() => user.id, { onDelete: "cascade" }),
 });
 
-	
-export default { tasks };
+
+export { user, session, account, verification, jwks } from "./auth/schema";

@@ -34,8 +34,8 @@ export default function RootLayout() {
 	const fontLoaded = loaded ? { fontFamily: "SpaceMono" } : {};
 
 	const authData = useMemo(() => {
-		return authClient.useSession();
-	}, []);
+		return session;
+	}, [session]);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	const cookie = useMemo(() => {
@@ -47,13 +47,17 @@ export default function RootLayout() {
 	}, [session, isPending]);
 
 	const zeroProps = useMemo(() => {
+		const mappedAuthData = authData?.data
+			? { sub: authData.data.user.id }
+			: undefined;
+
 		return {
 			storageKey: "todoit",
 			kvStore,
 			server: "http://localhost:4848",
-			userID: authData?.user.id ?? "anon",
+			userID: authData?.data?.user?.id ?? "anon",
 			schema,
-			mutators: createMutators(authData),
+			mutators: createMutators(mappedAuthData),
 			auth: cookie,
 		} as const satisfies ZeroOptions<Schema, Mutators>;
 	}, [authData, cookie]);
