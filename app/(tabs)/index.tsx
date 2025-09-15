@@ -2,20 +2,20 @@ import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import type { Mutators } from "@/db/zero/mutators";
-import type { Schema } from "@/db/zero/schema";
+import type { Schema } from "@/db/zero/schema.gen";
 import { authClient } from "@/lib/auth-client";
 import { useQuery, useZero } from "@rocicorp/zero/react";
 import { isLoading } from "expo-font";
 import { Image } from "expo-image";
 import { useState } from "react";
 import {
-	Alert,
-	FlatList,
-	StyleSheet,
-	Text,
-	TextInput,
-	TouchableOpacity,
-	View,
+  Alert,
+  FlatList,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 export default function HomeScreen() {

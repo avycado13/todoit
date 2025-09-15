@@ -1,6 +1,6 @@
 import type { AuthData } from "@/types/auth";
 import type { Transaction } from "@rocicorp/zero";
-import type { Schema } from "./schema";
+import type { Schema } from "./schema.gen";
 
 type Tx = Transaction<Schema>;
 

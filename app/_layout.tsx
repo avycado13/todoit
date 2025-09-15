@@ -1,8 +1,8 @@
 import { authClient } from "@/lib/auth-client";
 import {
-	DarkTheme,
-	DefaultTheme,
-	ThemeProvider,
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
 } from "@react-navigation/native";
 import { ZeroProvider } from "@rocicorp/zero/react";
 import { expoSQLiteStoreProvider } from "@rocicorp/zero/react-native";
@@ -13,11 +13,11 @@ import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
 import { createMutators, type Mutators } from "@/db/zero/mutators";
-import { type Schema, schema } from "@/db/zero/schema";
+import { type Schema, schema } from "@/db/zero/schema.gen";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import type { ZeroOptions } from "@rocicorp/zero";
 import { useMemo } from "react";
 import { Platform } from "react-native";
-import type { ZeroOptions } from "@rocicorp/zero";
 
 const kvStore = Platform.OS === "web" ? undefined : expoSQLiteStoreProvider();
 
@@ -47,17 +47,15 @@ export default function RootLayout() {
 	}, [session, isPending]);
 
 	const zeroProps = useMemo(() => {
-		const mappedAuthData = authData?.data
-			? { sub: authData.data.user.id }
-			: undefined;
+		
 
 		return {
 			storageKey: "todoit",
 			kvStore,
 			server: "http://localhost:4848",
-			userID: authData?.data?.user?.id ?? "anon",
+			userID: authData?.user?.id ?? "anon",
 			schema,
-			mutators: createMutators(mappedAuthData),
+			mutators: createMutators(authData ?? undefined),
 			auth: cookie,
 		} as const satisfies ZeroOptions<Schema, Mutators>;
 	}, [authData, cookie]);
