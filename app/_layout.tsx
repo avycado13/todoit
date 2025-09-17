@@ -1,8 +1,8 @@
-import { authClient } from "@/lib/auth-client";
+import { useSession } from "@/lib/use-session";
 import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
+	DarkTheme,
+	DefaultTheme,
+	ThemeProvider,
 } from "@react-navigation/native";
 import { ZeroProvider } from "@rocicorp/zero/react";
 import { expoSQLiteStoreProvider } from "@rocicorp/zero/react-native";
@@ -23,7 +23,7 @@ const kvStore = Platform.OS === "web" ? undefined : expoSQLiteStoreProvider();
 
 export default function RootLayout() {
 	const colorScheme = useColorScheme();
-	const { data: session, isPending } = authClient.useSession();
+	const { session, isPending } = useSession();
 
 	const [loaded] = useFonts({
 		SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
@@ -39,8 +39,7 @@ export default function RootLayout() {
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	const cookie = useMemo(() => {
-		const ck = Platform.OS === "web" ? undefined : authClient.getCookie();
-		return ck ? ck : undefined;
+		return session?.session?.token ? session.session.token : undefined;
 		// we force a re-render when the session changes, since getCookie is
 		// not reactive
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -63,8 +62,13 @@ export default function RootLayout() {
 	const content = (
 		<ZeroProvider {...zeroProps}>
 			<ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-				<Stack>
-					<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+				<Stack screenOptions={{ headerShown: false }}>
+					{authData?.user?.id ? (
+						<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+					) : (
+						// Directly point to the sign-in screen, not the group folder
+						<Stack.Screen name="sign-in" options={{ headerShown: false }} />
+					)}
 					<Stack.Screen name="+not-found" />
 				</Stack>
 				<StatusBar style="auto" />

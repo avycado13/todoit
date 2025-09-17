@@ -3,7 +3,6 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import type { Mutators } from "@/db/zero/mutators";
 import type { Schema } from "@/db/zero/schema.gen";
-import { authClient } from "@/lib/auth-client";
 import { useQuery, useZero } from "@rocicorp/zero/react";
 import { isLoading } from "expo-font";
 import { Image } from "expo-image";
@@ -17,9 +16,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useSession } from "@/lib/use-session";
 
 export default function HomeScreen() {
-	const { data: session } = authClient.useSession();
+	const { session } = useSession();
 	const zero = useZero<Schema, Mutators>();
 
 	// Form state for creating new tasks
@@ -33,7 +33,7 @@ export default function HomeScreen() {
 		"userId",
 		session?.user?.id ? session.user.id : "",
 	);
-	const [tasks, error] = useQuery(query);
+	const [tasks] = useQuery(query);
 
 	// Handle creating a new task
 	const handleCreateTask = async () => {
@@ -45,12 +45,11 @@ export default function HomeScreen() {
 		try {
 			const dueDateTimestamp = dueDate ? new Date(dueDate).getTime() : null;
 
-			await zero.mutate.tasks.insert({
+			zero.mutate.tasks.add({
 				title,
 				description: description || undefined,
-				due_date: dueDateTimestamp,
+				due_date: dueDateTimestamp ?? undefined,
 				status,
-				userId: session?.user?.id ?? "",
 			});
 
 			// Clear form
@@ -67,7 +66,7 @@ export default function HomeScreen() {
 	// Handle updating a task
 	const handleUpdateTask = async (taskId: string, newStatus: string) => {
 		try {
-			await zero.mutate.tasks.updateTask({
+			zero.mutate.tasks.updateTask({
 				id: taskId,
 				status: newStatus,
 				title: null,
@@ -83,7 +82,7 @@ export default function HomeScreen() {
 	// Handle deleting a task
 	const handleDeleteTask = async (taskId: string) => {
 		try {
-			await zero.mutate.tasks.remove(taskId);
+			zero.mutate.tasks.remove(taskId);
 		} catch (err) {
 			console.error("Error deleting task:", err);
 			Alert.alert("Error", "Failed to delete task");
@@ -93,7 +92,7 @@ export default function HomeScreen() {
 	// Handle archiving a completed task
 	const handleArchiveTask = async (taskId: string) => {
 		try {
-			await zero.mutate.tasks.updateTask({
+			zero.mutate.tasks.updateTask({
 				id: taskId,
 				status: "archived",
 				title: null,
@@ -120,25 +119,6 @@ export default function HomeScreen() {
 				<ThemedView style={styles.titleContainer}>
 					<ThemedText type="title">Loading tasks...</ThemedText>
 				</ThemedView>
-			</ParallaxScrollView>
-		);
-	}
-
-	if (error) {
-		return (
-			<ParallaxScrollView
-				headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
-				headerImage={
-					<Image
-						source={require("@/assets/images/partial-react-logo.png")}
-						style={styles.reactLogo}
-					/>
-				}
-			>
-			<ThemedView style={styles.titleContainer}>
-				<ThemedText type="title">Error loading tasks</ThemedText>
-				<ThemedText>{JSON.stringify(error)}</ThemedText>
-			</ThemedView>
 			</ParallaxScrollView>
 		);
 	}
@@ -188,7 +168,7 @@ export default function HomeScreen() {
 			{tasks && tasks.length > 0 ? (
 				<FlatList
 					data={tasks}
-					keyExtractor={(item) => item.id}
+					keyExtractor={(item) => (item.id ? item.id.toString() : "")}
 					renderItem={({ item }) => (
 						<ThemedView style={styles.taskContainer}>
 							<View style={styles.taskHeader}>
@@ -212,7 +192,7 @@ export default function HomeScreen() {
 								{item.status !== "completed" && (
 									<TouchableOpacity
 										style={[styles.button, styles.completeButton]}
-										onPress={() => handleUpdateTask(item.id, "completed")}
+										onPress={() => item.id && handleUpdateTask(item.id.toString(), "completed")}
 									>
 										<Text style={styles.buttonText}>Complete</Text>
 									</TouchableOpacity>
@@ -221,7 +201,7 @@ export default function HomeScreen() {
 								{item.status === "completed" && (
 									<TouchableOpacity
 										style={[styles.button, styles.archiveButton]}
-										onPress={() => handleArchiveTask(item.id)}
+										onPress={() => item.id && handleArchiveTask(item.id.toString())}
 									>
 										<Text style={styles.buttonText}>Archive</Text>
 									</TouchableOpacity>
@@ -229,7 +209,7 @@ export default function HomeScreen() {
 
 								<TouchableOpacity
 									style={[styles.button, styles.deleteButton]}
-									onPress={() => handleDeleteTask(item.id)}
+									onPress={() => item.id && handleDeleteTask(item.id.toString())}
 								>
 									<Text style={styles.buttonText}>Delete</Text>
 								</TouchableOpacity>

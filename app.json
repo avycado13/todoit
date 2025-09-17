@@ -17,7 +17,8 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.avycado13.todoit"
     },
     "web": {
       "bundler": "metro",
@@ -57,6 +58,13 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "bfc002e7-0547-420d-b33b-c7d87595c7fd"
+      }
+    },
+    "owner": "avycado13"
   }
 }

@@ -3,6 +3,7 @@ import { expo } from "@better-auth/expo";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { jwt, bearer, admin } from "better-auth/plugins";
 import { db } from "@/db/db";
+import * as schema from "@/db/schema";
 
 export const auth = betterAuth({
 	session: {
@@ -13,6 +14,7 @@ export const auth = betterAuth({
 	},
 	database: drizzleAdapter(db, {
 		provider: "pg", // or "sqlite" or "mysql"
+		schema
 	}),
 	plugins: [
 		expo(),
@@ -31,7 +33,7 @@ export const auth = betterAuth({
 		bearer(),
 		admin(),
 	],
-	trustedOrigins: ["todoit://"],
+	trustedOrigins: ["todoit://", "http://localhost:8081"],
 	emailAndPassword: {
 		enabled: true, // Enable authentication using email and password.
 	},

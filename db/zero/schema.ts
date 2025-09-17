@@ -1,13 +1,12 @@
+import { AuthData } from '@/types/auth';
 import {
   ANYONE_CAN,
-  ExpressionBuilder,
-  PermissionsConfig,
-  type Row,
   definePermissions,
+  ExpressionBuilder,
   Schema as ZeroSchema,
+  type Row
 } from '@rocicorp/zero';
-import {schema as genSchema} from './schema.gen';
-import { AuthData } from '@/types/auth';
+import { schema as genSchema } from './schema.gen';
 
 // Define a minimal user table for the relationship reference
 // Assuming 'user' table exists and has an 'id' primary key of type string.
@@ -24,7 +23,7 @@ export type User = Row<typeof schema.tables.user>;
 
 const allowIfTaskOwner = (
   authData: AuthData,
-  {cmp}: ExpressionBuilder<Schema, 'tasks'>,
+  { cmp }: ExpressionBuilder<Schema, 'tasks'>,
 ) => {
   // You can see a task if you are its owner.
   return cmp('userId', authData.user.id);

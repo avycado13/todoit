@@ -1,24 +1,30 @@
-import { authClient } from "@/lib/auth-client";
 import React, { useState } from "react";
-import { Button, StyleSheet, Text, TextInput, View } from "react-native";
+import { Button, StyleSheet, Text, TextInput, View, Alert } from "react-native";
+import { useSession } from "@/lib/use-session";
 
 const SignUpScreen = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [name, setName] = useState("");
+	const { signUp } = useSession();
 
 	const handleSignUp = async () => {
-		await authClient.signUp.email({
-			email,
-			password,
-			name,
-		});
+		try {
+			await signUp(email, password, name);
+		} catch (error) {
+			Alert.alert("Sign Up Error", "Failed to create account. Please try again.");
+		}
 	};
 
 	return (
 		<View style={styles.container}>
 			<Text style={styles.title}>Sign Up</Text>
-			<TextInput placeholder="Name" value={name} onChangeText={setName} />
+			<TextInput
+				placeholder="Name"
+				value={name}
+				onChangeText={setName}
+				style={styles.input}
+			/>
 			<TextInput
 				style={styles.input}
 				placeholder="Email"

@@ -26,14 +26,14 @@ export function createMutators(authData: AuthData | undefined) {
 				}
 				try {
 					await tx.mutate.tasks.insert({
-						id: crypto.randomUUID(), // generate a unique ID for the task
+						id: parseInt(crypto.randomUUID().slice(0, 12), 16), // generate a unique numeric ID
 						title,
 						description,
 						due_date: due_date ?? null,
 						status,
 						created_at: Date.now(),
 						updated_at: Date.now(),
-						userId: authData.sub,
+						userId: authData.user.id,
 					});
 				} catch (err) {
 					console.error("error adding task", err);
@@ -41,13 +41,13 @@ export function createMutators(authData: AuthData | undefined) {
 				}
 			},
 
-			remove: async (tx, taskId: string) => {
+			remove: async (tx: Tx, taskId: string) => {
 				if (!authData) {
 					throw new Error("Not authenticated");
 				}
 				const task = await tx.query.tasks
-					.where("id", taskId)
-					.where("userId", authData.sub)
+					.where("id", parseInt(taskId))
+					.where("userId", authData.user.id)
 					.one();
 				if (!task) return;
 				await tx.mutate.tasks.delete({
@@ -56,7 +56,7 @@ export function createMutators(authData: AuthData | undefined) {
 			},
 
 			updateTask: async (
-				tx,
+				tx: Tx,
 				{
 					id,
 					status,
@@ -75,8 +75,8 @@ export function createMutators(authData: AuthData | undefined) {
 
 				// Ensure the task belongs to the authenticated user
 				const task = await tx.query.tasks
-					.where("id", id)
-					.where("userId", authData.sub)
+					.where("id", parseInt(id))
+					.where("userId", authData.user.id)
 					.one();
 
 				if (!task) return;

@@ -1,16 +1,18 @@
-import { authClient } from "@/lib/auth-client";
 import React, { useState } from "react";
-import { Button, StyleSheet, Text, TextInput, View } from "react-native";
+import { Button, StyleSheet, Text, TextInput, View, Alert } from "react-native";
+import { useSession } from "@/lib/use-session";
 
 const SignInScreen = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const { signIn } = useSession();
 
 	const handleSignIn = async () => {
-		await authClient.signIn.email({
-			email,
-			password,
-		});
+		try {
+			await signIn(email, password);
+		} catch (error) {
+			Alert.alert("Sign In Error", "Invalid email or password. Please try again.");
+		}
 	};
 
 	return (
