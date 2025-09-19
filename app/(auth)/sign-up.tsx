@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { Button, StyleSheet, Text, TextInput, View, Alert } from "react-native";
 import { useSession } from "@/lib/use-session";
+import { useRouter } from "expo-router";
 
 const SignUpScreen = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [name, setName] = useState("");
 	const { signUp } = useSession();
+	const router = useRouter();
 
 	const handleSignUp = async () => {
 		try {
@@ -41,6 +43,8 @@ const SignUpScreen = () => {
 				secureTextEntry
 			/>
 			<Button title="Sign Up" onPress={handleSignUp} />
+			<br></br>
+			<Button title="Already have an account? Sign In" onPress={() => router.push("/sign-in")} />
 		</View>
 	);
 };

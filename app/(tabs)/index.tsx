@@ -4,17 +4,16 @@ import { ThemedView } from "@/components/ThemedView";
 import type { Mutators } from "@/db/zero/mutators";
 import type { Schema } from "@/db/zero/schema.gen";
 import { useQuery, useZero } from "@rocicorp/zero/react";
-import { isLoading } from "expo-font";
 import { Image } from "expo-image";
 import { useState } from "react";
 import {
-  Alert,
-  FlatList,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+	Alert,
+	FlatList,
+	StyleSheet,
+	Text,
+	TextInput,
+	TouchableOpacity,
+	View,
 } from "react-native";
 import { useSession } from "@/lib/use-session";
 
@@ -31,9 +30,9 @@ export default function HomeScreen() {
 	// Get tasks query
 	const query = zero.query.tasks.where(
 		"userId",
-		session?.user?.id ? session.user.id : "",
+		session?.user?.id ? session.user.id : "anon",
 	);
-	const [tasks] = useQuery(query);
+	const [tasks] = useQuery(query,);
 
 	// Handle creating a new task
 	const handleCreateTask = async () => {
@@ -45,7 +44,7 @@ export default function HomeScreen() {
 		try {
 			const dueDateTimestamp = dueDate ? new Date(dueDate).getTime() : null;
 
-			zero.mutate.tasks.add({
+			await zero.mutate.tasks.add({
 				title,
 				description: description || undefined,
 				due_date: dueDateTimestamp ?? undefined,
@@ -59,14 +58,14 @@ export default function HomeScreen() {
 			setStatus("pending");
 		} catch (err) {
 			console.error("Error creating task:", err);
-			Alert.alert("Error", "Failed to create task");
+			const errorMessage = err instanceof Error ? err.message : "Unknown error";
+			Alert.alert("Error", `Failed to create task: ${errorMessage}`);
 		}
 	};
 
-	// Handle updating a task
 	const handleUpdateTask = async (taskId: string, newStatus: string) => {
 		try {
-			zero.mutate.tasks.updateTask({
+			await zero.mutate.tasks.updateTask({
 				id: taskId,
 				status: newStatus,
 				title: null,
@@ -74,25 +73,24 @@ export default function HomeScreen() {
 				due_date: null,
 			});
 		} catch (err) {
-			console.error("Error updating task:", err);
-			Alert.alert("Error", "Failed to update task");
+			console.error("Error creating task:", err);
+			const errorMessage = err instanceof Error ? err.message : "Unknown error";
+			Alert.alert("Error", `Failed to create task: ${errorMessage}`);
 		}
 	};
 
-	// Handle deleting a task
 	const handleDeleteTask = async (taskId: string) => {
 		try {
-			zero.mutate.tasks.remove(taskId);
+			await zero.mutate.tasks.remove(taskId);
 		} catch (err) {
-			console.error("Error deleting task:", err);
-			Alert.alert("Error", "Failed to delete task");
-		}
+			console.error("Error creating task:", err);
+			const errorMessage = err instanceof Error ? err.message : "Unknown error";
+			Alert.alert("Error", `Failed to create task: ${errorMessage}`);
 	};
 
-	// Handle archiving a completed task
 	const handleArchiveTask = async (taskId: string) => {
 		try {
-			zero.mutate.tasks.updateTask({
+			await zero.mutate.tasks.updateTask({
 				id: taskId,
 				status: "archived",
 				title: null,
@@ -100,12 +98,13 @@ export default function HomeScreen() {
 				due_date: null,
 			});
 		} catch (err) {
-			console.error("Error archiving task:", err);
-			Alert.alert("Error", "Failed to archive task");
+			console.error("Error creating task:", err);
+			const errorMessage = err instanceof Error ? err.message : "Unknown error";
+			Alert.alert("Error", `Failed to create task: ${errorMessage}`);
 		}
 	};
 
-	if (isLoading("SpaceMono")) {
+	if (tasks === undefined && session?.user?.id) {
 		return (
 			<ParallaxScrollView
 				headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
@@ -168,7 +167,7 @@ export default function HomeScreen() {
 			{tasks && tasks.length > 0 ? (
 				<FlatList
 					data={tasks}
-					keyExtractor={(item) => (item.id ? item.id.toString() : "")}
+					keyExtractor={(item) => (item.id ?? "").toString()}
 					renderItem={({ item }) => (
 						<ThemedView style={styles.taskContainer}>
 							<View style={styles.taskHeader}>
@@ -313,3 +312,4 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 });
+}

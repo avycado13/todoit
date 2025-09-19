@@ -1,16 +1,19 @@
 import React, { useState } from "react";
 import { Button, StyleSheet, Text, TextInput, View, Alert } from "react-native";
 import { useSession } from "@/lib/use-session";
+import { useRouter } from "expo-router";
 
 const SignInScreen = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const { signIn } = useSession();
+	const router = useRouter();
+
 
 	const handleSignIn = async () => {
 		try {
 			await signIn(email, password);
-		} catch (error) {
+		} catch (error: Error | unknown) {
 			Alert.alert("Sign In Error", "Invalid email or password. Please try again.");
 		}
 	};
@@ -34,6 +37,8 @@ const SignInScreen = () => {
 				secureTextEntry
 			/>
 			<Button title="Sign In" onPress={handleSignIn} />
+			<br></br>
+			<Button title="Don't Have an account? Sign Up" onPress={() => router.push("/sign-up")} />
 		</View>
 	);
 };

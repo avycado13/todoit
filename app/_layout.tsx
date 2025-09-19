@@ -8,7 +8,7 @@ import { ZeroProvider } from "@rocicorp/zero/react";
 import { expoSQLiteStoreProvider } from "@rocicorp/zero/react-native";
 
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { Stack, usePathname, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
@@ -16,7 +16,7 @@ import { createMutators, type Mutators } from "@/db/zero/mutators";
 import { type Schema, schema } from "@/db/zero/schema.gen";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import type { ZeroOptions } from "@rocicorp/zero";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Platform } from "react-native";
 
 const kvStore = Platform.OS === "web" ? undefined : expoSQLiteStoreProvider();
@@ -24,6 +24,9 @@ const kvStore = Platform.OS === "web" ? undefined : expoSQLiteStoreProvider();
 export default function RootLayout() {
 	const colorScheme = useColorScheme();
 	const { session, isPending } = useSession();
+	const router = useRouter();
+	const pathname = usePathname();
+	const currentPath = Platform.OS === "web" ? window.location?.pathname : pathname;
 
 	const [loaded] = useFonts({
 		SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
@@ -46,7 +49,7 @@ export default function RootLayout() {
 	}, [session, isPending]);
 
 	const zeroProps = useMemo(() => {
-		
+
 
 		return {
 			storageKey: "todoit",
@@ -58,6 +61,19 @@ export default function RootLayout() {
 			auth: cookie,
 		} as const satisfies ZeroOptions<Schema, Mutators>;
 	}, [authData, cookie]);
+
+	useEffect(() => {
+		if (isPending) return;
+
+		const isSignedIn = !!session?.user?.id;
+
+		if (!isSignedIn && !currentPath?.includes('/sign-')) {
+			router.replace("/sign-in");
+		} else if (isSignedIn && currentPath?.includes('/sign-')) {
+			router.replace("/(tabs)");
+		}
+	}, [session, isPending, router, currentPath]);
+
 
 	const content = (
 		<ZeroProvider {...zeroProps}>

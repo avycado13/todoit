@@ -57,8 +57,17 @@ export async function POST(request: Request) {
 		})
 	);
 
-	const authData = cookies.authData ? JSON.parse(cookies.authData) : undefined;
-	const result = await processor.process(createMutators(authData), await request.json());
+const authData = cookies.authData
+  ? (() => {
+      try {
+        return JSON.parse(cookies.authData);
+      } catch {
+        return undefined;
+      }
+    })()
+  : undefined;
+
+const result = await processor.process(createMutators(authData), await request.json());
 
 	return Response.json({ result });
 }

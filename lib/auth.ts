@@ -33,7 +33,7 @@ export const auth = betterAuth({
 		bearer(),
 		admin(),
 	],
-	trustedOrigins: ["todoit://", "http://localhost:8081"],
+	trustedOrigins: ["todoit://", process.env.BETTER_AUTH_URL || "http://localhost:8081"],
 	emailAndPassword: {
 		enabled: true, // Enable authentication using email and password.
 	},
