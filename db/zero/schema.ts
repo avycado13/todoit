@@ -1,4 +1,4 @@
-import { AuthData } from '@/types/auth';
+import { Session } from '@/lib/auth';
 import {
   ANYONE_CAN,
   definePermissions,
@@ -22,14 +22,14 @@ export type Task = Row<typeof schema.tables.tasks>;
 export type User = Row<typeof schema.tables.user>;
 
 const allowIfTaskOwner = (
-  authData: AuthData,
+  session: Session,
   { cmp }: ExpressionBuilder<Schema, 'tasks'>,
 ) => {
   // You can see a task if you are its owner.
-  return cmp('userId', authData.user.id);
+  return cmp('userId', session.user.id);
 };
 
-export const permissions = definePermissions<AuthData, Schema>(schema, () => {
+export const permissions = definePermissions<Session, Schema>(schema, () => {
   return {
     tasks: {
       row: {
