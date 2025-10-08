@@ -37,7 +37,6 @@ export function createMutators(authData: AuthDataForMutators | undefined) {
 				}
 				try {
 					await tx.mutate.tasks.insert({
-						id: null,
 						title,
 						description,
 						due_date: due_date ?? null,
@@ -106,7 +105,7 @@ export function createMutators(authData: AuthDataForMutators | undefined) {
 				);
 			},
 		},
-	} as const;
+	}
 }
 
 export type Mutators = ReturnType<typeof createMutators>;

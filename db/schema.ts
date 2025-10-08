@@ -1,5 +1,5 @@
 import { pgTable, serial, text, timestamp, varchar } from "drizzle-orm/pg-core";
-import { user } from "./auth/schema";
+import { account, jwks, session, user, verification } from "./auth/schema";
 
 export const tasks = pgTable("tasks", {
 	id: serial("id").primaryKey(),
@@ -18,3 +18,13 @@ export const tasks = pgTable("tasks", {
 
 
 export { user, session, account, verification, jwks } from "./auth/schema";
+
+export const schema = {
+		user,
+		session,
+		account,
+		verification,
+		tasks,
+		jwks
+} as const;
+export type Schema = typeof schema;

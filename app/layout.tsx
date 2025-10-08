@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { headers } from "next/headers"
 import "./globals.css";
 import { auth } from "@/lib/auth";
+import { ZeroInit } from "@/components/zero-init";
+import { Toaster } from "@/components/ui/sonner"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,20 +26,25 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await auth.api.getSession({
-    headers: await headers()
-  });
-  const userID = session?.user.id ?? '';
-  const jwtToken = await auth.api.getToken({ headers: await headers() });
-
+  const session = await auth.api.getSession({ headers: await headers() });
+  let jwtToken = { token: null as string | null };
+  if (session) {
+    jwtToken = await auth.api.getToken({ headers: await headers() });
+  }
   return (
-
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
 
-      >
-          {children}
+        <ZeroInit userID={session?.user.id || 'anon'} token={jwtToken.token || ''}>
+          <main>
+
+            {children}
+          </main>
+          <Toaster />
+
+        </ZeroInit>
+
+
       </body>
     </html>
   );

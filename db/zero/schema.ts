@@ -14,7 +14,7 @@ import { schema as genSchema } from './schema.gen';
 
 export const schema = {
   ...genSchema,
-  enableLegacyMutators: false,
+  enableLegacyMutators: true,
 } as const satisfies ZeroSchema;
 
 export type Schema = typeof schema;

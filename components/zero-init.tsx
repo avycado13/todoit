@@ -13,10 +13,10 @@ interface ZeroInitProps {
 
 export function ZeroInit({ children, userID, token }: ZeroInitProps) {
   return (
-    <ZeroProvider
+    <ZeroProvider<typeof schema, ReturnType<typeof createMutators>>
       userID={userID}
       auth={token}
-      server={process.env.NEXT_PUBLIC_API_URL}
+      server={process.env.NEXT_PUBLIC_ZERO_URL || "http://localhost:4848"}
       schema={schema}
       mutators={createMutators({
         user: { id: userID },

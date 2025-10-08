@@ -129,7 +129,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$db$2f$zero$2f$schema$2e$gen$
 ;
 const schema = {
     ...__TURBOPACK__imported__module__$5b$project$5d2f$db$2f$zero$2f$schema$2e$gen$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["schema"],
-    enableLegacyMutators: false
+    enableLegacyMutators: true
 };
 const allowIfTaskOwner = (session, param)=>{
     let { cmp } = param;
@@ -189,7 +189,6 @@ function createMutators(authData) {
                 }
                 try {
                     await tx.mutate.tasks.insert({
-                        id: null,
                         title,
                         description,
                         due_date: due_date !== null && due_date !== void 0 ? due_date : null,
@@ -259,7 +258,7 @@ function ZeroInit(param) {
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$15$2e$5$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$1$2e$0_react$40$19$2e$1$2e$0_$5f$react$40$19$2e$1$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f40$rocicorp$2b$zero$40$0$2e$23$2e$2025090100_$40$opentelemetry$2b$core$40$2$2e$1$2e$0_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_$5f$typescript$40$5$2e$9$2e$3$2f$node_modules$2f40$rocicorp$2f$zero$2f$out$2f$react$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ZeroProvider"], {
         userID: userID,
         auth: token,
-        server: ("TURBOPACK compile-time value", "http://localhost:8081"),
+        server: ("TURBOPACK compile-time value", "http://localhost:4848") || "http://localhost:4848",
         schema: __TURBOPACK__imported__module__$5b$project$5d2f$db$2f$zero$2f$schema$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["schema"],
         mutators: (0, __TURBOPACK__imported__module__$5b$project$5d2f$db$2f$zero$2f$mutators$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["createMutators"])({
             user: {
