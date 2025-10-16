@@ -36,11 +36,7 @@ export function SignupForm({
     const confirmPassword = formData.get("confirm-password") as string;
 
     if (password !== confirmPassword) {
-      toast({
-        variant: "destructive",
-        title: "Password mismatch",
-        description: "Password and confirm password do not match.",
-      });
+      toast("Password and confirm password do not match.");
       return;
     }
 

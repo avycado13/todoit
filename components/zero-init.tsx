@@ -3,7 +3,7 @@
 import { ReactNode } from "react";
 import { ZeroProvider } from "@rocicorp/zero/react";
 import { schema } from "@/db/zero/schema";
-import { createMutators } from "@/db/zero/mutators";
+import { createMutators, Mutators } from "@/db/zero/mutators";
 
 interface ZeroInitProps {
   children: ReactNode;
@@ -13,10 +13,10 @@ interface ZeroInitProps {
 
 export function ZeroInit({ children, userID, token }: ZeroInitProps) {
   return (
-    <ZeroProvider<typeof schema, ReturnType<typeof createMutators>>
+    <ZeroProvider<typeof schema, Mutators>
       userID={userID}
       auth={token}
-      server={process.env.NEXT_PUBLIC_ZERO_URL || "http://localhost:4848"}
+      server={process.env.NEXT_PUBLIC_API_URL || "http://localhost:4848"}
       schema={schema}
       mutators={createMutators({
         user: { id: userID },
